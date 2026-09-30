@@ -12,7 +12,7 @@ function makeSubcribeMessage(email, subscribed) {
 
 const subscribeForm = document.querySelector("#subscribe-form");
 const emailInput= document.querySelector("#email");
-const subscribeButton = document.querySelector("#ssubscribeButton");
+const subscribeButton = document.querySelector("#subscribeButton");
 const subscribeMessage = document.querySelector("#subscribeMessage");
 
 function handleSubscribe(event) {
