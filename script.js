@@ -33,7 +33,7 @@ function handleSubscribe(event) {
     subscribeMessage.textContent =
         makeSubcribeMessage(subscriberEmail, isSubcribed);
 
-     subscribeMessage.classList.add("is-success");   
+     subscribeMessage.classList.add("is-success");
 
      subscribeButton.textContent = "신청 완료";
      subscribeButton.disabled = true;
@@ -74,7 +74,7 @@ function handleAgreeChange(){
         : "동의 후 훈련 설정을 시작할 수 있습니다.";
 
     if (agreed) {
-        agreeMessage.classList.add("is-ready");    
+        agreeMessage.classList.add("is-ready");
     } else {
         agreeMessage.classList.remove("is-ready");
     }
@@ -122,7 +122,8 @@ const progressItems = trainingFlow.querySelectorAll(".progress_item");
 const titleInput = document.querySelector("#presentation-title");
 const titleError = document.querySelector("#title-error");
 const titleNext = document.querySelector("#title-next");
-const durationRang = document.querySelector("#duration-range");
+// [수정] 변수명 오타 durationRang → durationRange (아래에서 durationRange 로 사용되어 오류 발생)
+const durationRange = document.querySelector("#duration-range");
 const durationValue = document.querySelector("#duration-value");
 const qnaQption = document.querySelector("#qna-option");
 const qnaQptions = document.querySelector("#qna-options");
@@ -136,9 +137,22 @@ const summaryDuration = document.querySelector("#summary-duration");
 const summaryQna = document.querySelector("#summary-qna");
 const durationValues = ["3", "5", "10"];
 
+// [추가] 연습 구간 선택 / 연습 완료 기록 관련 요소
+const partBoxes = document.querySelectorAll('input[name="part"]');
+const partError = document.querySelector("#part-error");
+const summaryParts = document.querySelector("#summary-parts");
+const taskList = document.querySelector("#task-list");
+const progressBar = document.querySelector("#progress-bar");
+const progressText = document.querySelector("#progress-text");
+const recordMessage = document.querySelector("#record-message");
+
+// [수정] parts(선택한 연습 구간)와 done(완료 기록) 추가
 const formData = {
-    title:"", duration: "5", qna: false, qnaCount: "2"
+    title:"", duration: "5", qna: false, qnaCount: "2", parts: [], done: {}
 };
+
+// [추가] 현재 연습 완료 기록 대상 목록
+let tasks = [];
 
 function showStep(index) {
     flowSteps.forEach((step, i) => { step.hidden = i !== index; });
@@ -202,30 +216,121 @@ qnaQption.addEventListener("change", () => {
     qnaQptions.hidden = !qnaQption.checked;
 });
 
+// [추가] 연습 구간을 하나라도 고르면 오류 메시지를 바로 지움
+partBoxes.forEach((box) => {
+    box.addEventListener("change", () => {
+        const selected = Array.from(partBoxes).filter((b) => b.checked);
+        if (hasParts(selected)) partError.textContent = "";
+    });
+});
+
 optionPrev.addEventListener("click", () => showStep(0));
 optionNext.addEventListener("click", () => {
+    // [추가] 선택한 연습 구간이 없으면 오류 메시지를 보여주고 다음 단계로 가지 않음
+    const selectedParts = Array.from(partBoxes)
+        .filter((b) => b.checked)
+        .map((b) => b.value);
+    if (!hasParts(selectedParts)) {
+        partError.textContent = "연습할 구간을 1개 이상 선택해 주세요";
+        partBoxes[0].focus();
+        return;
+    }
+    partError.textContent = "";
+    formData.parts = selectedParts;
+
     formData.duration = durationValues[durationRange.value];
     formData.qna = qnaQption.checked;
     const count = document.querySelector('input[name="qna-count"]:checked');
     formData.qnaCount = count.value;
     summaryTitle.textContent = formData.title;
     summaryDuration.textContent = formData.duration + "분";
+    summaryParts.textContent = partLabels(formData.parts).join(", "); // [추가]
     summaryQna.textContent =formData.qna ? formData.qnaCount + "개 포함" :  "미포함";
     showStep(2);
 });
 
 summaryPrev.addEventListener("click", () => showStep(1));
-finishButton.addEventListener("click", () => showStep(3));
+
+// [추가] 진행률 갱신: 완료 개수 → 퍼센트 자동 계산 후 화면에 반영
+function renderProgress(message) {
+    const doneCount = countDone(tasks, formData.done);
+    const percent = calcProgress(doneCount, tasks.length);
+    progressBar.value = percent;
+    progressBar.setAttribute("aria-valuetext", percent + "% 완료");
+    progressText.textContent = doneCount + " / " + tasks.length + " 완료 (" + percent + "%)";
+    recordMessage.textContent = message || getProgressMessage(percent);
+    recordMessage.classList.toggle("is-ready", percent === 100);
+}
+
+// [추가] 연습 완료 체크 목록 생성 및 체크/해제 시 기록
+function renderTasks() {
+    taskList.innerHTML = "";
+    tasks.forEach((task) => {
+        const li = document.createElement("li");
+        const label = document.createElement("label");
+        const box = document.createElement("input");
+        const name = document.createElement("span");
+        const time = document.createElement("small");
+
+        box.type = "checkbox";
+        box.checked = Boolean(formData.done[task.id]);
+        name.textContent = task.label;
+        time.className = "task-time";
+        time.textContent = formData.done[task.id] ? formData.done[task.id] + " 완료" : "";
+
+        box.addEventListener("change", () => {
+            if (box.checked) {
+                const now = new Date();
+                const stamp = (now.getMonth() + 1) + "/" + now.getDate() + " " +
+                    String(now.getHours()).padStart(2, "0") + ":" +
+                    String(now.getMinutes()).padStart(2, "0");
+                formData.done[task.id] = stamp;
+                time.textContent = stamp + " 완료";
+                renderProgress("'" + task.label + "' 연습 완료를 기록했어요.");
+            } else {
+                delete formData.done[task.id];
+                time.textContent = "";
+                renderProgress("'" + task.label + "' 기록을 취소했어요.");
+            }
+        });
+
+        label.append(box, name);
+        li.append(label, time);
+        taskList.append(li);
+    });
+}
+
+// [수정] 설정 완료 시 연습 완료 기록 목록을 만들고 진행률을 0%로 시작. 원래: showStep(3)만 실행
+finishButton.addEventListener("click", () => {
+    tasks = buildTasks(formData);
+    formData.done = {};
+    renderTasks();
+    renderProgress();
+    showStep(3);
+});
+
 restartButton.addEventListener("click", () => {
     formData.title = "";
     formData.duration = "5";
     formData.qna = false;
     formData.qnaCount = "2";
+    formData.parts = []; // [추가]
+    formData.done = {};  // [추가]
+    tasks = [];          // [추가]
     titleInput.value = "";
     titleError.textContent = "";
     titleInput.classList.remove("has-error");
     durationRange.value = "1";
     durationValue.value = "5분";
+    // [추가] 연습 구간 선택, 오류, 기록 화면 초기화
+    partBoxes.forEach((b) => { b.checked = false; });
+    partError.textContent = "";
+    taskList.innerHTML = "";
+    progressBar.value = 0;
+    progressText.textContent = "0 / 0 완료 (0%)";
+    recordMessage.textContent = "";
+    recordMessage.classList.remove("is-ready");
+    summaryParts.textContent = "";
     qnaQption.checked = false;
     qnaQptions.hidden = true;
     document.querySelector('input[name="qna-count"][value="2"]').checked = true;

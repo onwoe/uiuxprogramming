@@ -34,19 +34,19 @@
 
             <h2>서비스 소개</h2>
             <h3>안전한 환경에서 반복하는 발표 연습</h3>
-        
+
             <img src="assets/images/image.jpg" alt="연습한 발표 상황을 선택하고 반복해서 연습하는 사용자">
 
             <p>가상 청중 앞에서 발표를 연습할 수 있는 환경을 제공합니다</p>
             <p>연습이 끝나면 발표 결과를 확인하고 개선할 부분을 파악할 수 있습니다</p>
         </section>
-        
+
         <!-- 훈련 기능: 서비스가 제공하는 기능을 나열하는 영역 -->
         <section id="features">
             <h2>훈련 기능</h2>
             <div class="tabs" role="tablist" aria-label="기능 선택">
-                <button 
-                id="tab-practice" 
+                <button
+                id="tab-practice"
                 class="tab is-active"
                 type="button"
                 role="tab"
@@ -55,7 +55,7 @@
                 data-target="#feature-practice">
                 단계별 연습
                 </button>
-                
+
                 <button
                     id="tab-audience"
                     class="tab"
@@ -65,8 +65,8 @@
                     aria-controls="feature-audience"
                     data-target="#feature-audience">
                     가상 청중
-                </button> 
-                
+                </button>
+
                 <button
                     id="tab-feedback"
                     class="tab"
@@ -85,7 +85,7 @@
                 role="tabpanel"
                 aria-labelledby="tab-practice">
                 <h3>단계별 발표 연습</h3>
-                <p>발표 상황을 선택하고 단계별로 나누어 연습할 수 있습니다.</p>          
+                <p>발표 상황을 선택하고 단계별로 나누어 연습할 수 있습니다.</p>
             </div>
 
             <div
@@ -96,8 +96,8 @@
                 hidden>
                 <h3>가상 청중 연습</h3>
                 <p>가상 청중의 반응을 확인하며 실제 발표처럼 연습할 수 있습니다.</p>
-            </div>   
-            
+            </div>
+
             <div
                 id="feature-feedback"
                 class="panel"
@@ -106,7 +106,9 @@
                 hidden>
                 <h3>발표 피드백</h3>
                 <p>발표가 끝난 뒤 개선할 부분과 다음 연습 목표를 확인합니다.</p>
-            </div>    
+                <!-- [추가] 새 기능 안내: 연습 완료 기록과 진행률 -->
+                <p>연습을 마친 구간을 체크하면 진행률이 자동으로 계산됩니다.</p>
+            </div>
         </section>
 
         <!-- 이용 방법: 가입부터 피드백 확인까지 순서가 있는 흐름 -->
@@ -129,7 +131,7 @@
                     <h3>화면 테마</h3>
                     <button id="themeButton" type="button">다크 테마로 바꾸기</button>
                 </article>
-                
+
                 <article class="event-card">
                     <h3>발표자 정보</h3>
                     <label for="nickname">발표자 이름</label>
@@ -146,7 +148,7 @@
                     <p id="agreeMessage" aria-live="polite">
                         동의 후 훈련을 시작할 수 있습니다.
                     </p>
-                    <button id="startButton" type="button" disabled> 
+                    <button id="startButton" type="button" disabled>
                         훈련 설정 시작하기
                     </button>
                 </article>
@@ -168,14 +170,16 @@
                 <span class="progress_item">1ㆍ정보</span>
                 <span class="progress_item">2ㆍ조건</span>
                 <span class="progress_item">3ㆍ확인</span>
+                <!-- [추가] 4단계(연습 기록) 표시 -->
+                <span class="progress_item">4ㆍ기록</span>
             </p>
-            
+
             <section class="step" data-step="1" hidden>
                 <h3>발표 정보를 입력해 주세요</h3>
                 <label for="presentation-title">발표 제목</label>
                 <input id="presentation-title" type="text" placeholder="예: 나의 발표 프로젝트 소개" aria-describedby="title-error">
                 <p id="title-error" class="error-message" aria-live="polite"></p>
-                <button id="title-next" type="button">훈련 조건 선택하기</button> 
+                <button id="title-next" type="button">훈련 조건 선택하기</button>
             </section>
 
             <section class="step" data-step="2" hidden>
@@ -183,6 +187,19 @@
                 <label for="duration-range">발표 시간</label>
                 <input id="duration-range" type="range" min="0" max="2" step="1" value="1">
                 <output id="duration-value" for="duration-range">5분</output>
+
+                <!-- [추가] 연습할 구간 선택 (진행률 계산의 기준, 1개 이상 필수) -->
+                <fieldset id="part-list" class="part-list" aria-describedby="part-error">
+                    <legend>연습할 구간 (1개 이상)</legend>
+                    <label><input type="checkbox" name="part" value="intro">도입 (인사와 주제 소개)</label>
+                    <label><input type="checkbox" name="part" value="body">본론 전개</label>
+                    <label><input type="checkbox" name="part" value="closing">마무리와 요약</label>
+                    <label><input type="checkbox" name="part" value="voice">목소리와 말 속도</label>
+                    <label><input type="checkbox" name="part" value="eye">시선과 자세</label>
+                    <label><input type="checkbox" name="part" value="timing">시간 배분</label>
+                </fieldset>
+                <p id="part-error" class="error-message" aria-live="polite"></p>
+
                 <label><input type="checkbox" id="qna-option">질의응답 포함</label>
                 <fieldset id="qna-options" hidden>
                     <legend>질문 수</legend>
@@ -201,6 +218,8 @@
                 <div class="summary-list">
                     <div><span>발표제목</span><strong id="summary-title"></strong></div>
                     <div><span>발표시간</span><strong id="summary-duration"></strong></div>
+                    <!-- [추가] 선택한 연습 구간 요약 -->
+                    <div><span>연습 구간</span><strong id="summary-parts"></strong></div>
                     <div><span>질의응답</span><strong id="summary-qna"></strong></div>
                 </div>
                 <div class="step-actions">
@@ -212,9 +231,22 @@
            <section class="step complete-step" data-step="4" hidden>
                 <h3>훈련 설정이 완료되었습니다</h3>
                 <p>설정한 내용을 확인했습니다. 필요하면 다시 설정할 수 있습니다.</p>
+                <!-- [추가] 연습 완료 기록 안내 -->
+                <p>연습을 마친 구간을 체크하면 진행률이 자동으로 계산됩니다.</p>
+
+                <!-- [추가] 진행률 표시 -->
+                <div class="progress-box">
+                    <p id="progress-text" aria-live="polite">0 / 0 완료 (0%)</p>
+                    <progress id="progress-bar" max="100" value="0" aria-label="연습 진행률"></progress>
+                </div>
+
+                <!-- [추가] 연습 완료 체크 목록 (script.js 에서 생성) -->
+                <ul id="task-list" class="task-list"></ul>
+                <p id="record-message" class="record-message" aria-live="polite"></p>
+
                 <button id="restart-button" type="button">다시 설정하기</button>
            </section>
-            
+
         </section>
 
         <!-- 훈련 소식 받기 : 이 페이지의 핵심 행동이 일어나는 영역 -->
@@ -230,7 +262,7 @@
             <p id="subscribeMessage" aria-live="polite">
                 이메일을 입력한 뒤 신청해주세요.
             </p>
-            
+
         </section>
     </main>
 
@@ -238,6 +270,8 @@
         <small>@ 2026 발표 훈련 서비스</small>
     </footer>
 
+    <!-- [추가] 순수 계산 함수 파일 (script.js 보다 먼저 로드) -->
+    <script src="logic.js"></script>
     <script src="script.js"></script>
 
 </body>

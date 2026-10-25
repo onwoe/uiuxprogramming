@@ -180,7 +180,7 @@ button:active{
 }
 
 .event-card label:not(.agree-row){
-    display: black;
+    display: block; /* [수정] 오타 black → block */
     margin-bottom: 8px;
     font-weight: 700;
 }
@@ -314,7 +314,8 @@ body.dark #recording-dialog {background: #50515f; color: #fff;}
 .training-flow .step[hidden],
 .training-flow fieldset[hidden] {display: none;}
 .training-flow .progress {display: flex; flex-wrap: wrap; gap: 12px;}
-.training-flow .progress__item.is-active{
+/* [수정] 클래스명 progress__item → progress_item (HTML/JS 와 일치시킴) */
+.training-flow .progress_item.is-active{
     color: #635bff;
     font-weight: 800;
 }
@@ -325,7 +326,7 @@ body.dark #recording-dialog {background: #50515f; color: #fff;}
     font-weight: 700;
 }
 
-.training-flow #presentation-title.has.error {border-color: #9d243d;}
+.training-flow #presentation-title.has-error {border-color: #9d243d;} /* [수정] 오타 .has.error → .has-error */
 .training-flow #duration-range{width: 100%; accent-color: #635bff;}
 .training-flow input[type="checkbox"],
 .training-flow input[type="radio"] {
@@ -350,6 +351,94 @@ body.dark #recording-dialog {background: #50515f; color: #fff;}
 body.dark .training-flow{
     background-color: #50515f;
     border-color: #2d2e38;
+}
+
+/* [추가] 공부할 주제 체크박스 목록 */
+.training-flow .part-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px 16px;
+    margin: 16px 0 0;
+    border: 1px solid #deddea;
+    border-radius: 12px;
+}
+.training-flow .part-list label,
+.training-flow .task-list label{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* [추가] 학습 완료 기록 + 진행률 */
+.progress-box{
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #f4f3ff;
+}
+.progress-box p{
+    margin: 0 0 8px;
+    font-weight: 700;
+}
+#progress-bar{
+    width: 100%;
+    height: 16px;
+    accent-color: #635bff;
+}
+.task-list{
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+}
+.task-list li{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid #deddea;
+}
+.task-list label{cursor: pointer;}
+.task-list input[type="checkbox"]{width: 22px; height: 22px;}
+.task-time{
+    color: #245c3a;
+    font-weight: 700;
+}
+.record-message{
+    padding: 12px;
+    border-radius: 10px;
+    background-color: #ecebf2;
+}
+.record-message:empty{display: none;}
+.record-message.is-ready{
+    color: #245c3a;
+    background-color: #e7f7ed;
+    font-weight: 700;
+}
+body.dark .progress-box,
+body.dark .record-message{background-color: #2d2e38;}
+body.dark .record-message.is-ready{color: #bff0d0; background-color: #1f3a2b;}
+body.dark .task-time{color: #bff0d0;}
+body.dark .training-flow .error-message{color: #ffb3c1;}
+
+/* [수정] 구독 메시지 스타일을 @media 밖으로 이동 (원래는 768px 이하에서만 적용되던 오류) */
+#subscribeMessage{
+    margin-top: 16px;
+    color: #555763;
+}
+
+#subscribeMessage.is-success{
+    color: #245c3a;
+    background-color: #e7f7ed;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+#subscribeButton:disabled{
+    color: #ffffff;
+    background-color: #a8a8b2;
+    cursor: not-allowed;
 }
 
 /* 웹페이지가 표시되는 가로 폭이 768px 이하일 때만 적용*/
@@ -380,7 +469,7 @@ body.dark .training-flow{
         align-items: stretch;
         gap: 8px;
     }
-    
+
     nav a{
         /* 링크 글자 주변에도 누를 수 있는 여백 추가*/
         padding: 8px 0;
@@ -406,7 +495,7 @@ body.dark .training-flow{
     button{
         /*모바일에서도 버튼의 누르는 영역이 너무 낮아지지 않게 설정*/
         min-height: 48px;
-    }   
+    }
 
 .tabs {
     flex-direction: column;
@@ -426,23 +515,8 @@ body.dark .training-flow{
 .training-flow input[type="checkbox"],
 .training-flow input[type="radio"] {width: auto;}
 
-    #subscribeMessage{
-        margin-top: 16px;
-        color: #555763;
-    }
-
-    #subscribeMessage.is-success{
-        color: #245c3a;
-        background-color: #e7f7ed;
-        padding: 12px;
-        border-radius: 10px;
-        font-weight: 700;
-    }
-
-    #subscribeButton:disabled{
-        color: #ffffff;
-        background-color: #a8a8b2;
-        cursor: not-allowed;
-    }
+/* [추가] 모바일: 요약 목록 1열, 체크박스 터치 영역 확대 */
+.training-flow .summary-list div {flex-direction: column; gap: 4px;}
+.task-list input[type="checkbox"] {width: 24px; height: 24px;}
 
 }
